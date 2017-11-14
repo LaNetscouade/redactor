@@ -1,1 +1,65 @@
-!function(a){a.Redactor.prototype.filemanager=function(){return{init:function(){this.opts.fileManagerJson&&this.modal.addCallback("file",this.filemanager.load)},load:function(){var e=this.modal.getModal();this.modal.createTabber(e),this.modal.addTab(1,"Upload","active"),this.modal.addTab(2,"Choose"),a("#redactor-modal-file-upload-box").addClass("redactor-tab redactor-tab1");var t=a('<div id="redactor-file-manager-box" style="overflow: auto; height: 300px;" class="redactor-tab redactor-tab2">').hide();e.append(t),a.ajax({dataType:"json",cache:!1,url:this.opts.fileManagerJson,success:a.proxy(function(e){var t=a('<ul id="redactor-modal-list">');a.each(e,a.proxy(function(e,r){var i=a('<a href="#" title="'+r.title+'" rel="'+r.link+'" class="redactor-file-manager-link">'+r.title+' <span style="font-size: 11px; color: #888;">'+r.name+'</span> <span style="position: absolute; right: 10px; font-size: 11px; color: #888;">('+r.size+")</span></a>"),o=a("<li />");i.on("click",a.proxy(this.filemanager.insert,this)),o.append(i),t.append(o)},this)),a("#redactor-file-manager-box").append(t)},this)})},insert:function(e){e.preventDefault();var t=a(e.target).closest(".redactor-file-manager-link");this.file.insert('<a href="'+t.attr("rel")+'">'+t.attr("title")+"</a>")}}}}(jQuery);
+(function($)
+{
+	$.Redactor.prototype.filemanager = function()
+	{
+		return {
+			langs: {
+				en: {
+					"upload": "Upload",
+					"choose": "Choose"
+				}
+			},
+			init: function()
+			{
+				if (!this.opts.fileManagerJson)
+				{
+					return;
+				}
+
+				this.modal.addCallback('file', this.filemanager.load);
+			},
+			load: function()
+			{
+				var $box = $('<div  style="overflow: auto; height: 300px; display: none;" class="redactor-modal-tab" data-title="Choose">').hide();
+				this.modal.getModal().append($box);
+
+
+				$.ajax({
+				  dataType: "json",
+				  cache: false,
+				  url: this.opts.fileManagerJson,
+				  success: $.proxy(function(data)
+					{
+						var ul = $('<ul id="redactor-modal-list">');
+						$.each(data, $.proxy(function(key, val)
+						{
+
+							var a = $('<a href="#" data-params="' + encodeURI(JSON.stringify(val)) + '" class="redactor-file-manager-link">' + val.title + ' <span style="font-size: 11px; color: #888;">' + val.name + '</span> <span style="position: absolute; right: 10px; font-size: 11px; color: #888;">(' + val.size + ')</span></a>');
+							var li = $('<li />');
+
+							a.on('click', $.proxy(this.filemanager.insert, this));
+
+							li.append(a);
+							ul.append(li);
+
+						}, this));
+
+						$box.append(ul);
+
+
+					}, this)
+				});
+
+			},
+			insert: function(e)
+			{
+				e.preventDefault();
+
+				var $el = $(e.target).closest('.redactor-file-manager-link');
+				var json = $.parseJSON(decodeURI($el.attr('data-params')));
+
+				this.file.insert(json, null);
+			}
+		};
+	};
+})(jQuery);

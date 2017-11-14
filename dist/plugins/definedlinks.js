@@ -1,1 +1,63 @@
-!function(e){e.Redactor.prototype.definedlinks=function(){return{init:function(){this.opts.definedLinks&&this.modal.addCallback("link",e.proxy(this.definedlinks.load,this))},load:function(){var i=e('<select id="redactor-defined-links" />');e("#redactor-modal-link-insert").prepend(i),this.definedlinks.storage={},e.getJSON(this.opts.definedLinks,e.proxy(function(n){e.each(n,e.proxy(function(n,t){this.definedlinks.storage[n]=t,i.append(e("<option>").val(n).html(t.name))},this)),i.on("change",e.proxy(this.definedlinks.select,this))},this))},select:function(i){var n=e(i.target).val(),t="",d="";0!==n&&(t=this.definedlinks.storage[n].name,d=this.definedlinks.storage[n].url),e("#redactor-link-url").val(d);var s=e("#redactor-link-url-text");""===s.val()&&s.val(t)}}}}(jQuery);
+(function($)
+{
+	$.Redactor.prototype.definedlinks = function()
+	{
+		return {
+			init: function()
+			{
+				if (!this.opts.definedLinks)
+				{
+					return;
+				}
+
+				this.modal.addCallback('link', $.proxy(this.definedlinks.load, this));
+
+			},
+			load: function()
+			{
+				var $section = $('<section />');
+				var $select = $('<select id="redactor-defined-links" />');
+
+				$section.append($select);
+				this.modal.getModal().prepend($section);
+
+				this.definedlinks.storage = {};
+
+				var url = (this.opts.definedlinks) ? this.opts.definedlinks : this.opts.definedLinks;
+				$.getJSON(url, $.proxy(function(data)
+				{
+					$.each(data, $.proxy(function(key, val)
+					{
+						this.definedlinks.storage[key] = val;
+						$select.append($('<option>').val(key).html(val.name));
+
+					}, this));
+
+					$select.on('change', $.proxy(this.definedlinks.select, this));
+
+				}, this));
+
+			},
+			select: function(e)
+			{
+				var oldText = $.trim($('#redactor-link-url-text').val());
+
+				var key = $(e.target).val();
+				var name = '', url = '';
+				if (key !== 0)
+				{
+					name = this.definedlinks.storage[key].name;
+					url = this.definedlinks.storage[key].url;
+				}
+
+				$('#redactor-link-url').val(url);
+
+				if (oldText === '')
+				{
+					$('#redactor-link-url-text').val(name);
+				}
+
+			}
+		};
+	};
+})(jQuery);

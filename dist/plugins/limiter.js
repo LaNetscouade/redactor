@@ -1,1 +1,45 @@
-!function(t){t.Redactor.prototype.limiter=function(){return{init:function(){this.opts.limiter&&this.$editor.on("keydown.redactor-limiter",t.proxy(function(t){var i=t.which,e=t.ctrlKey||t.metaKey;if(!(i==this.keyCode.BACKSPACE||i==this.keyCode.DELETE||i==this.keyCode.ESC||i==this.keyCode.SHIFT||e&&65==i||e&&82==i||e&&116==i)){var o=this.$editor.text().length;return o>=this.opts.limiter?!1:void 0}},this))}}}}(jQuery);
+(function($)
+{
+	$.Redactor.prototype.limiter = function()
+	{
+		return {
+			init: function()
+			{
+				if (!this.opts.limiter)
+				{
+					return;
+				}
+
+				this.core.editor().on('keydown.redactor-plugin-limiter', $.proxy(function(e)
+				{
+					var key = e.which;
+					var ctrl = e.ctrlKey || e.metaKey;
+
+					if (key === this.keyCode.BACKSPACE
+					   	|| key === this.keyCode.DELETE
+					    || key === this.keyCode.ESC
+					    || key === this.keyCode.SHIFT
+					    || (ctrl && key === 65)
+					    || (ctrl && key === 82)
+					    || (ctrl && key === 116)
+					)
+					{
+						return;
+					}
+
+					var text = this.core.editor().text();
+					text = text.replace(/\u200B/g, '');
+
+					var count = text.length;
+					if (count >= this.opts.limiter)
+					{
+						return false;
+					}
+
+
+				}, this));
+
+			}
+		};
+	};
+})(jQuery);

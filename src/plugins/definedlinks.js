@@ -5,19 +5,26 @@
 		return {
 			init: function()
 			{
-				if (!this.opts.definedLinks) return;
+				if (!this.opts.definedLinks)
+				{
+					return;
+				}
 
 				this.modal.addCallback('link', $.proxy(this.definedlinks.load, this));
 
 			},
 			load: function()
 			{
+				var $section = $('<section />');
 				var $select = $('<select id="redactor-defined-links" />');
-				$('#redactor-modal-link-insert').prepend($select);
+
+				$section.append($select);
+				this.modal.getModal().prepend($section);
 
 				this.definedlinks.storage = {};
 
-				$.getJSON(this.opts.definedLinks, $.proxy(function(data)
+				var url = (this.opts.definedlinks) ? this.opts.definedlinks : this.opts.definedLinks;
+				$.getJSON(url, $.proxy(function(data)
 				{
 					$.each(data, $.proxy(function(key, val)
 					{
@@ -33,6 +40,8 @@
 			},
 			select: function(e)
 			{
+				var oldText = $.trim($('#redactor-link-url-text').val());
+
 				var key = $(e.target).val();
 				var name = '', url = '';
 				if (key !== 0)
@@ -43,8 +52,11 @@
 
 				$('#redactor-link-url').val(url);
 
-				var $el = $('#redactor-link-url-text');
-				if ($el.val() === '') $el.val(name);
+				if (oldText === '')
+				{
+					$('#redactor-link-url-text').val(name);
+				}
+
 			}
 		};
 	};

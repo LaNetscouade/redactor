@@ -1,1 +1,34 @@
-!function(t){t.Redactor.prototype.fontfamily=function(){return{init:function(){var n=["Arial","Helvetica","Georgia","Times New Roman","Monospace"],i=this,e={};t.each(n,function(t,n){e["s"+t]={title:n,func:function(){i.fontfamily.set(n)}}}),e.remove={title:"Remove Font Family",func:i.fontfamily.reset};var o=this.button.add("fontfamily","Change Font Family");this.button.addDropdown(o,e)},set:function(t){this.inline.format("span","style","font-family:"+t+";")},reset:function(){this.inline.removeStyleRule("font-family")}}}}(jQuery);
+(function($)
+{
+	$.Redactor.prototype.fontfamily = function()
+	{
+		return {
+			init: function ()
+			{
+				var fonts = [ 'Arial', 'Helvetica', 'Georgia', 'Times New Roman', 'Monospace' ];
+				var that = this;
+				var dropdown = {};
+
+				$.each(fonts, function(i, s)
+				{
+					dropdown['s' + i] = { title: s, func: function() { that.fontfamily.set(s); }};
+				});
+
+				dropdown.remove = { title: 'Remove Font Family', func: that.fontfamily.reset };
+
+				var button = this.button.add('fontfamily', 'Font');
+				this.button.setIcon(button, '<i class="re-icon-fontfamily"></i>');
+				this.button.addDropdown(button, dropdown);
+
+			},
+			set: function (value)
+			{
+				this.inline.format('span', 'style', 'font-family:' + value + ';');
+			},
+			reset: function()
+			{
+				this.inline.removeStyleRule('font-family');
+			}
+		};
+	};
+})(jQuery);

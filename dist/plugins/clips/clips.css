@@ -1,1 +1,10 @@
-.label-red{color:#fff;background:#c92020;padding:0 7px;border-radius:4px}
+b.label-red {
+	color: #fff;
+	background: #c92020;
+	padding: 0 7px;
+	font-size: 11px;
+	text-transform: uppercase;
+	font-weight: normal;
+	display: inline-block;
+	border-radius: 4px;
+}

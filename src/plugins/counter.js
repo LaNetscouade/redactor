@@ -5,37 +5,42 @@
 		return {
 			init: function()
 			{
-				if (!this.opts.counterCallback) return;
-
-				this.$editor.on('keyup.redactor-limiter', $.proxy(function(e)
+				if (typeof this.opts.callbacks.counter === 'undefined')
 				{
-					var words = 0, characters = 0, spaces = 0;
-
-					var html = this.code.get();
-
-					var text = html.replace(/<\/(.*?)>/gi, ' ');
-					text = text.replace(/<(.*?)>/gi, '');
-					text = text.replace(/\t/gi, '');
-					text = text.replace(/\n/gi, ' ');
-					text = text.replace(/\r/gi, ' ');
-					text = $.trim(text);
-
-					if (text !== '')
-					{
-						var arrWords = text.split(/\s+/);
-						var arrSpaces = text.match(/\s/g);
-
-						if (arrWords) words = arrWords.length;
-						if (arrSpaces) spaces = arrSpaces.length;
-
-						characters = text.length;
-
-					}
-
-					this.core.setCallback('counter', { words: words, characters: characters, spaces: spaces });
+					return;
+				}
 
 
-				}, this));
+
+				this.core.editor().on('keyup.redactor-plugin-counter', $.proxy(this.counter.count, this));
+			},
+			count: function()
+			{
+				var words = 0, characters = 0, spaces = 0;
+				var html = this.code.get();
+
+				var text = html.replace(/<\/(.*?)>/gi, ' ');
+				text = text.replace(/<(.*?)>/gi, '');
+				text = text.replace(/\t/gi, '');
+				text = text.replace(/\n/gi, ' ');
+				text = text.replace(/\r/gi, ' ');
+				text = text.replace(/\u200B/g, '');
+				text = $.trim(text);
+
+				if (text !== '')
+				{
+					var arrWords = text.split(/\s+/);
+					var arrSpaces = text.match(/\s/g);
+
+					words = (arrWords) ? arrWords.length : 0;
+					spaces = (arrSpaces) ? arrSpaces.length : 0;
+
+					characters = text.length;
+
+				}
+
+				this.core.callback('counter', { words: words, characters: characters, spaces: spaces });
+
 			}
 		};
 	};

@@ -1,1 +1,37 @@
-!function(t){t.Redactor.prototype.textdirection=function(){return{init:function(){var t=this,e={};e.ltr={title:"Left to Right",func:t.textdirection.setLtr},e.rtl={title:"Right to Left",func:t.textdirection.setRtl};var i=this.button.add("textdirection","Change Text Direction");this.button.addDropdown(i,e)},setRtl:function(){this.buffer.set(),this.block.setAttr("dir","rtl")},setLtr:function(){this.buffer.set(),this.block.removeAttr("dir")}}}}(jQuery);
+(function($)
+{
+	$.Redactor.prototype.textdirection = function()
+	{
+		return {
+			langs: {
+				en: {
+					"change-text-direction": "RTL-LTR",
+					"left-to-right": "Left to Right",
+					"right-to-left": "Right to Left"
+				}
+			},
+			init: function()
+			{
+				var that = this;
+				var dropdown = {};
+
+				dropdown.ltr = { title: that.lang.get('left-to-right'), func: that.textdirection.setLtr };
+				dropdown.rtl = { title: that.lang.get('right-to-left'), func: that.textdirection.setRtl };
+
+				var button = this.button.add('textdirection', this.lang.get('change-text-direction'));
+				this.button.setIcon(button, '<i class="re-icon-textdirection"></i>');
+				this.button.addDropdown(button, dropdown);
+			},
+			setRtl: function()
+			{
+				this.buffer.set();
+				this.block.addAttr('dir', 'rtl');
+			},
+			setLtr: function()
+			{
+				this.buffer.set();
+				this.block.removeAttr('dir');
+			}
+		};
+	};
+})(jQuery);

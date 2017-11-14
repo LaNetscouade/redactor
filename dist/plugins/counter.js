@@ -1,1 +1,47 @@
-!function(t){t.Redactor.prototype.counter=function(){return{init:function(){this.opts.counterCallback&&this.$editor.on("keyup.redactor-limiter",t.proxy(function(e){var r=0,c=0,i=0,n=this.code.get(),o=n.replace(/<\/(.*?)>/gi," ");if(o=o.replace(/<(.*?)>/gi,""),o=o.replace(/\t/gi,""),o=o.replace(/\n/gi," "),o=o.replace(/\r/gi," "),o=t.trim(o),""!==o){var a=o.split(/\s+/),l=o.match(/\s/g);a&&(r=a.length),l&&(i=l.length),c=o.length}this.core.setCallback("counter",{words:r,characters:c,spaces:i})},this))}}}}(jQuery);
+(function($)
+{
+	$.Redactor.prototype.counter = function()
+	{
+		return {
+			init: function()
+			{
+				if (typeof this.opts.callbacks.counter === 'undefined')
+				{
+					return;
+				}
+
+
+
+				this.core.editor().on('keyup.redactor-plugin-counter', $.proxy(this.counter.count, this));
+			},
+			count: function()
+			{
+				var words = 0, characters = 0, spaces = 0;
+				var html = this.code.get();
+
+				var text = html.replace(/<\/(.*?)>/gi, ' ');
+				text = text.replace(/<(.*?)>/gi, '');
+				text = text.replace(/\t/gi, '');
+				text = text.replace(/\n/gi, ' ');
+				text = text.replace(/\r/gi, ' ');
+				text = text.replace(/\u200B/g, '');
+				text = $.trim(text);
+
+				if (text !== '')
+				{
+					var arrWords = text.split(/\s+/);
+					var arrSpaces = text.match(/\s/g);
+
+					words = (arrWords) ? arrWords.length : 0;
+					spaces = (arrSpaces) ? arrSpaces.length : 0;
+
+					characters = text.length;
+
+				}
+
+				this.core.callback('counter', { words: words, characters: characters, spaces: spaces });
+
+			}
+		};
+	};
+})(jQuery);

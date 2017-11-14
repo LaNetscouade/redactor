@@ -1,1 +1,471 @@
-!function(e){e.Redactor.prototype.table=function(){return{getTemplate:function(){return String()+'<section id="redactor-modal-table-insert"><label>'+this.lang.get("rows")+'</label><input type="text" size="5" value="2" id="redactor-table-rows" /><label>'+this.lang.get("columns")+'</label><input type="text" size="5" value="3" id="redactor-table-columns" /></section>'},init:function(){var e={};e.insert_table={title:this.lang.get("insert_table"),func:this.table.show,observe:{element:"table","in":{attr:{"class":"redactor-dropdown-link-inactive","aria-disabled":!0}}}},e.insert_row_above={title:this.lang.get("insert_row_above"),func:this.table.addRowAbove,observe:{element:"table",out:{attr:{"class":"redactor-dropdown-link-inactive","aria-disabled":!0}}}},e.insert_row_below={title:this.lang.get("insert_row_below"),func:this.table.addRowBelow,observe:{element:"table",out:{attr:{"class":"redactor-dropdown-link-inactive","aria-disabled":!0}}}},e.insert_column_left={title:this.lang.get("insert_column_left"),func:this.table.addColumnLeft,observe:{element:"table",out:{attr:{"class":"redactor-dropdown-link-inactive","aria-disabled":!0}}}},e.insert_column_right={title:this.lang.get("insert_column_right"),func:this.table.addColumnRight,observe:{element:"table",out:{attr:{"class":"redactor-dropdown-link-inactive","aria-disabled":!0}}}},e.add_head={title:this.lang.get("add_head"),func:this.table.addHead,observe:{element:"table",out:{attr:{"class":"redactor-dropdown-link-inactive","aria-disabled":!0}}}},e.delete_head={title:this.lang.get("delete_head"),func:this.table.deleteHead,observe:{element:"table",out:{attr:{"class":"redactor-dropdown-link-inactive","aria-disabled":!0}}}},e.delete_column={title:this.lang.get("delete_column"),func:this.table.deleteColumn,observe:{element:"table",out:{attr:{"class":"redactor-dropdown-link-inactive","aria-disabled":!0}}}},e.delete_row={title:this.lang.get("delete_row"),func:this.table.deleteRow,observe:{element:"table",out:{attr:{"class":"redactor-dropdown-link-inactive","aria-disabled":!0}}}},e.delete_table={title:this.lang.get("delete_table"),func:this.table.deleteTable,observe:{element:"table",out:{attr:{"class":"redactor-dropdown-link-inactive","aria-disabled":!0}}}},this.observe.addButton("td","table"),this.observe.addButton("th","table");var t=this.button.addBefore("link","table",this.lang.get("table"));this.button.addDropdown(t,e)},show:function(){this.modal.addTemplate("table",this.table.getTemplate()),this.modal.load("table",this.lang.get("insert_table"),300),this.modal.createCancelButton();var t=this.modal.createActionButton(this.lang.get("insert"));t.on("click",this.table.insert),this.selection.save(),this.modal.show(),e("#redactor-table-rows").focus()},insert:function(){this.placeholder.remove();var t,a,i,l,s=e("#redactor-table-rows").val(),r=e("#redactor-table-columns").val(),n=e("<div>"),o=Math.floor(99999*Math.random()),d=e('<table id="table'+o+'"><tbody></tbody></table>');for(t=0;s>t;t++){for(a=e("<tr>"),i=0;r>i;i++)l=e("<td>"+this.opts.invisibleSpace+"</td>"),0===t&&0===i&&l.append(this.selection.getMarker()),e(a).append(l);d.append(a)}n.append(d);var h=n.html();if(this.modal.close(),this.selection.restore(),!this.table.getTable()){this.buffer.set();var c=this.selection.getBlock()||this.selection.getCurrent();c&&"BODY"!=c.tagName?("LI"==c.tagName&&(c=e(c).closest("ul, ol")),e(c).after(h)):this.insert.html(h,!1),this.selection.restore();var b=this.$editor.find("#table"+o),f=b.prev("p");if(f.length>0&&this.utils.isEmpty(f.html())&&f.remove(),!this.opts.linebreaks&&(this.utils.browser("mozilla")||this.utils.browser("msie"))){var u=b.next();0===u.length&&b.after(this.opts.emptyHtml)}this.observe.buttons(),b.find("span.redactor-selection-marker").remove(),b.removeAttr("id"),this.code.sync(),this.core.setCallback("insertedTable",b)}},getTable:function(){var t=e(this.selection.getParent()).closest("table");return this.utils.isRedactorParent(t)?0===t.size()?!1:t:!1},restoreAfterDelete:function(e){this.selection.restore(),e.find("span.redactor-selection-marker").remove(),this.code.sync()},deleteTable:function(){var e=this.table.getTable();if(e){this.buffer.set();var t=e.next();this.opts.linebreaks||0===t.length?this.caret.setAfter(e):this.caret.setStart(t),e.remove(),this.code.sync()}},deleteRow:function(){var t=this.table.getTable();if(t){var a=e(this.selection.getCurrent());this.buffer.set();var i=a.closest("tr"),l=i.prev().length?i.prev():i.next();if(l.length){var s=l.children("td, th").first();s.length&&s.prepend(this.selection.getMarker())}i.remove(),this.table.restoreAfterDelete(t)}},deleteColumn:function(){var t=this.table.getTable();if(t){this.buffer.set();var a=e(this.selection.getCurrent()),i=a.closest("td, th"),l=i[0].cellIndex;t.find("tr").each(e.proxy(function(t,a){var i=e(a),s=0>l-1?l+1:l-1;0===t&&i.find("td, th").eq(s).prepend(this.selection.getMarker()),i.find("td, th").eq(l).remove()},this)),this.table.restoreAfterDelete(t)}},addHead:function(){var t=this.table.getTable();if(t){if(this.buffer.set(),0!==t.find("thead").size())return void this.table.deleteHead();var a=t.find("tr").first().clone();a.find("td").replaceWith(e.proxy(function(){return e("<th>").html(this.opts.invisibleSpace)},this)),$thead=e("<thead></thead>").append(a),t.prepend($thead),this.code.sync()}},deleteHead:function(){var e=this.table.getTable();if(e){var t=e.find("thead");0!==t.size()&&(this.buffer.set(),t.remove(),this.code.sync())}},addRowAbove:function(){this.table.addRow("before")},addRowBelow:function(){this.table.addRow("after")},addColumnLeft:function(){this.table.addColumn("before")},addColumnRight:function(){this.table.addColumn("after")},addRow:function(t){var a=this.table.getTable();if(a){this.buffer.set();var i=e(this.selection.getCurrent()),l=i.closest("tr"),s=l.clone();s.find("th").replaceWith(function(){var t=e("<td>");return t[0].attributes=this.attributes,t.append(e(this).contents())}),s.find("td").html(this.opts.invisibleSpace),"after"==t?l.after(s):l.before(s),this.code.sync()}},addColumn:function(t){var a=this.table.getTable();if(a){var i=0,l=e(this.selection.getCurrent());this.buffer.set();var s=l.closest("tr"),r=l.closest("td, th");s.find("td, th").each(e.proxy(function(t,a){e(a)[0]===r[0]&&(i=t)},this)),a.find("tr").each(e.proxy(function(a,l){var s=e(l).find("td, th").eq(i),r=s.clone();r.html(this.opts.invisibleSpace),"after"==t?s.after(r):s.before(r)},this)),this.code.sync()}}}}}(jQuery);
+(function($)
+{
+	$.Redactor.prototype.table = function()
+	{
+		return {
+			langs: {
+				en: {
+					"table": "Table",
+					"insert-table": "Insert table",
+					"insert-row-above": "Insert row above",
+					"insert-row-below": "Insert row below",
+					"insert-column-left": "Insert column left",
+					"insert-column-right": "Insert column right",
+					"add-head": "Add head",
+					"delete-head": "Delete head",
+					"delete-column": "Delete column",
+					"delete-row": "Delete row",
+					"delete-table": "Delete table"
+				}
+			},
+			init: function()
+			{
+				var dropdown = {};
+
+				dropdown.insert_table = {
+					title: this.lang.get('insert-table'),
+					func: this.table.insert,
+					observe: {
+						element: 'table',
+						in: {
+							attr: {
+								'class': 'redactor-dropdown-link-inactive',
+								'aria-disabled': true,
+							}
+						}
+					}
+				};
+
+				dropdown.insert_row_above = {
+					title: this.lang.get('insert-row-above'),
+					func: this.table.addRowAbove,
+					observe: {
+						element: 'table',
+						out: {
+							attr: {
+								'class': 'redactor-dropdown-link-inactive',
+								'aria-disabled': true,
+							}
+						}
+					}
+				};
+
+				dropdown.insert_row_below = {
+					title: this.lang.get('insert-row-below'),
+					func: this.table.addRowBelow,
+					observe: {
+						element: 'table',
+						out: {
+							attr: {
+								'class': 'redactor-dropdown-link-inactive',
+								'aria-disabled': true,
+							}
+						}
+					}
+				};
+
+				dropdown.insert_column_left = {
+					title: this.lang.get('insert-column-left'),
+					func: this.table.addColumnLeft,
+					observe: {
+						element: 'table',
+						out: {
+							attr: {
+								'class': 'redactor-dropdown-link-inactive',
+								'aria-disabled': true,
+							}
+						}
+					}
+				};
+
+				dropdown.insert_column_right = {
+					title: this.lang.get('insert-column-right'),
+					func: this.table.addColumnRight,
+					observe: {
+						element: 'table',
+						out: {
+							attr: {
+								'class': 'redactor-dropdown-link-inactive',
+								'aria-disabled': true,
+							}
+						}
+					}
+				};
+
+				dropdown.add_head = {
+					title: this.lang.get('add-head'),
+					func: this.table.addHead,
+					observe: {
+						element: 'table',
+						out: {
+							attr: {
+								'class': 'redactor-dropdown-link-inactive',
+								'aria-disabled': true,
+							}
+						}
+					}
+				};
+
+				dropdown.delete_head = {
+					title: this.lang.get('delete-head'),
+					func: this.table.deleteHead,
+					observe: {
+						element: 'table',
+						out: {
+							attr: {
+								'class': 'redactor-dropdown-link-inactive',
+								'aria-disabled': true,
+							}
+						}
+					}
+				};
+
+				dropdown.delete_column = {
+    				title: this.lang.get('delete-column'),
+    				func: this.table.deleteColumn,
+    				observe: {
+    					element: 'table',
+    					out: {
+    						attr: {
+    							'class': 'redactor-dropdown-link-inactive',
+    							'aria-disabled': true,
+    						}
+    					}
+    				}
+    			};
+
+				dropdown.delete_row = {
+					title: this.lang.get('delete-row'),
+					func: this.table.deleteRow,
+					observe: {
+						element: 'table',
+						out: {
+							attr: {
+								'class': 'redactor-dropdown-link-inactive',
+								'aria-disabled': true,
+							}
+						}
+					}
+				};
+
+				dropdown.delete_table = {
+					title: this.lang.get('delete-table'),
+					func: this.table.deleteTable,
+					observe: {
+						element: 'table',
+						out: {
+							attr: {
+								'class': 'redactor-dropdown-link-inactive',
+								'aria-disabled': true,
+							}
+						}
+					}
+				};
+
+
+				var button = this.button.addBefore('link', 'table', this.lang.get('table'));
+				this.button.setIcon(button, '<i class="re-icon-table"></i>');
+				this.button.addDropdown(button, dropdown);
+			},
+			insert: function()
+			{
+				if (this.table.getTable())
+				{
+					return;
+				}
+
+				this.placeholder.hide();
+
+				var rows = 2;
+				var columns = 3;
+				var $tableBox = $('<div>');
+				var $table = $('<table />');
+
+				for (var i = 0; i < rows; i++)
+				{
+					var $row = $('<tr>');
+
+					for (var z = 0; z < columns; z++)
+					{
+						var $column = $('<td>' + this.opts.invisibleSpace + '</td>');
+
+						// set the focus to the first td
+						if (i === 0 && z === 0)
+						{
+							$column.append(this.marker.get());
+						}
+
+						$($row).append($column);
+					}
+
+					$table.append($row);
+				}
+
+				$tableBox.append($table);
+				var html = $tableBox.html();
+
+				this.buffer.set();
+
+				var current = this.selection.current();
+				if ($(current).closest('li', this.core.editor()[0]).length !== 0)
+				{
+					$(current).closest('ul, ol').first().after(html);
+				}
+				else
+				{
+					this.air.collapsed();
+					this.insert.html(html);
+				}
+
+				this.selection.restore();
+				this.core.callback('insertedTable', $table);
+			},
+			getTable: function()
+			{
+				var $table = $(this.selection.current()).closest('table');
+
+				if (!this.utils.isRedactorParent($table))
+				{
+					return false;
+				}
+
+				if ($table.length === 0)
+				{
+					return false;
+				}
+
+				return $table;
+			},
+			restoreAfterDelete: function($table)
+			{
+				this.selection.restore();
+				$table.find('span.redactor-selection-marker').remove();
+
+			},
+			deleteTable: function()
+			{
+				var $table = this.table.getTable();
+				if (!$table)
+				{
+					return;
+				}
+
+				this.buffer.set();
+
+
+				var $next = $table.next();
+				if (!this.opts.linebreaks && $next.length !== 0)
+				{
+					this.caret.start($next);
+				}
+				else
+				{
+					this.caret.after($table);
+				}
+
+
+				$table.remove();
+
+
+			},
+			deleteRow: function()
+			{
+				var $table = this.table.getTable();
+				if (!$table)
+				{
+					return;
+				}
+
+				var $current = $(this.selection.current());
+
+				this.buffer.set();
+
+				var $current_tr = $current.closest('tr');
+				var $focus_tr = $current_tr.prev().length ? $current_tr.prev() : $current_tr.next();
+				if ($focus_tr.length)
+				{
+					var $focus_td = $focus_tr.children('td, th').first();
+					if ($focus_td.length)
+					{
+						$focus_td.prepend(this.marker.get());
+					}
+				}
+
+				$current_tr.remove();
+				this.table.restoreAfterDelete($table);
+			},
+			deleteColumn: function()
+			{
+				var $table = this.table.getTable();
+				if (!$table)
+				{
+					return;
+				}
+
+				this.buffer.set();
+
+				var $current = $(this.selection.current());
+				var $current_td = $current.closest('td, th');
+				var index = $current_td[0].cellIndex;
+
+				$table.find('tr').each($.proxy(function(i, elem)
+				{
+					var $elem = $(elem);
+					var focusIndex = index - 1 < 0 ? index + 1 : index - 1;
+					if (i === 0)
+					{
+						$elem.find('td, th').eq(focusIndex).prepend(this.marker.get());
+					}
+
+					$elem.find('td, th').eq(index).remove();
+
+				}, this));
+
+				this.table.restoreAfterDelete($table);
+			},
+			addHead: function()
+			{
+				var $table = this.table.getTable();
+				if (!$table)
+				{
+					return;
+				}
+
+				this.buffer.set();
+
+				if ($table.find('thead').length !== 0)
+				{
+					this.table.deleteHead();
+					return;
+				}
+
+				var tr = $table.find('tr').first().clone();
+				tr.find('td').replaceWith($.proxy(function()
+				{
+					return $('<th>').html(this.opts.invisibleSpace);
+				}, this));
+
+				$thead = $('<thead></thead>').append(tr);
+				$table.prepend($thead);
+
+
+
+			},
+			deleteHead: function()
+			{
+				var $table = this.table.getTable();
+				if (!$table)
+				{
+					return;
+				}
+
+				var $thead = $table.find('thead');
+				if ($thead.length === 0)
+				{
+					return;
+				}
+
+				this.buffer.set();
+
+				$thead.remove();
+
+			},
+			addRowAbove: function()
+			{
+				this.table.addRow('before');
+			},
+			addRowBelow: function()
+			{
+				this.table.addRow('after');
+			},
+			addColumnLeft: function()
+			{
+				this.table.addColumn('before');
+			},
+			addColumnRight: function()
+			{
+				this.table.addColumn('after');
+			},
+			addRow: function(type)
+			{
+				var $table = this.table.getTable();
+				if (!$table)
+				{
+					return;
+				}
+
+				this.buffer.set();
+
+				var $current = $(this.selection.current());
+				var $current_tr = $current.closest('tr');
+				var new_tr = $current_tr.clone();
+
+				new_tr.find('th').replaceWith(function()
+				{
+					var $td = $('<td>');
+					$td[0].attributes = this.attributes;
+
+					return $td.append($(this).contents());
+				});
+
+				new_tr.find('td').html(this.opts.invisibleSpace);
+
+				if (type === 'after')
+				{
+					$current_tr.after(new_tr);
+				}
+				else
+				{
+					$current_tr.before(new_tr);
+				}
+
+
+			},
+			addColumn: function (type)
+			{
+				var $table = this.table.getTable();
+				if (!$table)
+				{
+					return;
+				}
+
+				var index = 0;
+				var current = $(this.selection.current());
+
+				this.buffer.set();
+
+				var $current_tr = current.closest('tr');
+				var $current_td = current.closest('td, th');
+
+				$current_tr.find('td, th').each($.proxy(function(i, elem)
+				{
+					if ($(elem)[0] === $current_td[0])
+					{
+						index = i;
+					}
+
+				}, this));
+
+				$table.find('tr').each($.proxy(function(i, elem)
+				{
+					var $current = $(elem).find('td, th').eq(index);
+
+					var td = $current.clone();
+					td.html(this.opts.invisibleSpace);
+
+					if (type === 'after')
+					{
+						$current.after(td);
+					}
+					else
+					{
+						$current.before(td);
+					}
+
+				}, this));
+
+
+			}
+		};
+	};
+})(jQuery);
